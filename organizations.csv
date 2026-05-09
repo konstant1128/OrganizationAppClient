@@ -1,0 +1,14 @@
+﻿ID;Название;ИНН;Тип;Сотрудников
+1;Alpha Group;7700000000;InsuranceCompany;10
+2;Beta Corp;7700000001;InsuranceCompany;10
+3;Gamma Industries;7700000002;InsuranceCompany;10
+4;Delta Holdings;7700000003;InsuranceCompany;10
+5;Epsilon Ltd;7700000004;InsuranceCompany;10
+6;Zeta Partners;7700000005;Plant;10
+8;Theta Systems;7700000007;Plant;10
+9;Iota Technologies;7700000008;Plant;10
+11;Lambda Services;1111111111;OilGasCompany;10
+12;Mu Dynamics;7700000011;OilGasCompany;10
+13;Nu Innovations;7700000012;OilGasCompany;10
+14;Xin Ventures;7700000013;OilGasCompany;10
+15;Omicron Global;7700000014;OilGasCompany;10
