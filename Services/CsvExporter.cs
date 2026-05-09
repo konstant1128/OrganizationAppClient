@@ -2,7 +2,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using OrganizationAppClient.Models;
 using System.Globalization;
-using System.Text;  // ← Добавьте это!
+using System.Text;
 
 namespace OrganizationAppClient.Services;
 
@@ -10,7 +10,7 @@ public class CsvExporter
 {
     public async Task ExportToCsvAsync(List<OrganizationDto> organizations, string filePath)
     {
-        await using var writer = new StreamWriter(filePath, append: false, Encoding.UTF8); // ← Исправлено
+        await using var writer = new StreamWriter(filePath, append: false, Encoding.UTF8);
         await using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             Delimiter = ";",
@@ -21,7 +21,7 @@ public class CsvExporter
         csv.Context.RegisterClassMap<OrganizationMap>();
         await csv.WriteRecordsAsync(organizations);
         
-        Console.WriteLine($"✓ Экспортировано {organizations.Count} записей в {filePath}");
+        Console.WriteLine($"Экспортировано {organizations.Count} записей в {filePath}");
     }
 }
 

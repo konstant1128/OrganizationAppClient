@@ -23,9 +23,9 @@ class Program
         var cts = new CancellationTokenSource();
         Console.CancelKeyPress += (sender, e) =>
         {
-            Console.WriteLine("\n⚠ Запрос на отмену...");
+            Console.WriteLine("\nЗапрос на отмену...");
             cts.Cancel();
-            e.Cancel = true; // Предотвращает немедленное завершение
+            e.Cancel = true;
         };
 
         Console.OutputEncoding = Encoding.UTF8;
@@ -37,16 +37,16 @@ class Program
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine("\n✓ Операция отменена пользователем");
+            Console.WriteLine("\nОперация отменена пользователем");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"\n❌ Критическая ошибка: {ex.Message}");
+            Console.WriteLine($"\nКритическая ошибка: {ex.Message}");
         }
         finally
         {
             cts.Dispose();
-            Console.WriteLine("\n👋 Завершение работы клиента...");
+            Console.WriteLine("\nЗавершение работы клиента...");
         }
     }
 
@@ -62,7 +62,7 @@ class Program
 
         while (!ct.IsCancellationRequested)
         {
-            Console.Write("\n➤ ");
+            Console.Write("\n> ");
             var key = Console.ReadKey(intercept: true).KeyChar;
             Console.WriteLine();
 
@@ -96,24 +96,24 @@ class Program
                     case 'q':
                         return;
                     default:
-                        Console.WriteLine("⚠ Неизвестная команда. Нажмите 'H' для справки.");
+                        Console.WriteLine("Неизвестная команда. Нажмите 'H' для справки.");
                         break;
                 }
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                Console.WriteLine("\n⚠ Операция отменена");
+                Console.WriteLine("\nОперация отменена");
                 break;
             }
             catch (ClientException ex)
             {
-                Console.WriteLine($"\n❌ [{ex.GetType().Name}] {ex.Message}");
+                Console.WriteLine($"\n[{ex.GetType().Name}] {ex.Message}");
                 if (ex.InnerException != null)
                     Console.WriteLine($"   Внутренняя ошибка: {ex.InnerException.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\n❌ Неожиданная ошибка: {ex.Message}");
+                Console.WriteLine($"\nНеожиданная ошибка: {ex.Message}");
 #if DEBUG
                 Console.WriteLine($"   StackTrace: {ex.StackTrace}");
 #endif
@@ -134,7 +134,7 @@ class Program
         var request = new GetOrganizationsRequest { Page = page, PageSize = pageSize };
         var result = await cacheService.GetOrganizationsAsync(request, ct);
 
-        Console.WriteLine($"\n📋 Найдено организаций: {result.TotalCount} (страница {result.Page}/{result.TotalPages})");
+        Console.WriteLine($"\nНайдено организаций: {result.TotalCount} (страница {result.Page}/{result.TotalPages})");
         Console.WriteLine(new string('─', 80));
 
         if (result.Items.Count == 0)
@@ -147,10 +147,10 @@ class Program
         {
             var typeIcon = org.Type switch
             {
-                "Государственная" => "🏛️",
-                "Частная" => "🏢",
-                "ИП" => "👤",
-                _ => "📋"
+                "Государственная" => "[G]",
+                "Частная" => "[P]",
+                "ИП" => "[I]",
+                _ => "[*]"
             };
             Console.WriteLine($"   {typeIcon} [{org.Id,4}] {org.Name,-30} ИНН:{org.Inn}  сотр:{org.EmployeeCount}");
         }
@@ -159,45 +159,45 @@ class Program
 
     static async Task SearchOrganizationsAsync(CachedOrganizationService cacheService, CancellationToken ct)
     {
-        Console.Write("🔍 Введите ИНН для поиска: ");
+        Console.Write("Введите ИНН для поиска: ");
         var inn = Console.ReadLine()?.Trim();
 
         if (string.IsNullOrEmpty(inn))
         {
-            Console.WriteLine("⚠ ИНН не указан. Поиск отменён.");
+            Console.WriteLine("ИНН не указан. Поиск отменён.");
             return;
         }
 
         // Загружаем все организации (большой pageSize, чтобы захватить всё)
-        Console.WriteLine("→ Загрузка данных для поиска...");
+        Console.WriteLine("Загрузка данных для поиска...");
         var request = new GetOrganizationsRequest
         {
             Page = 1,
-            PageSize = 1000,  // Большой размер страницы для клиентской фильтрации
-            Search = null,    // Не используем серверный поиск
+            PageSize = 1000,
+            Search = null,
             Type = null
         };
 
         var result = await cacheService.GetOrganizationsAsync(request, ct);
 
-        // 🔍 ФИЛЬТРАЦИЯ НА КЛИЕНТЕ: оставляем только совпадения по ИНН
+        // Фильтрация на клиенте: оставляем только совпадения по ИНН
         var filtered = result.Items
             .Where(o => o.Inn?.Contains(inn, StringComparison.OrdinalIgnoreCase) == true)
             .ToList();
 
-        Console.WriteLine($"\n🔎 Результаты поиска по ИНН: {inn}");
+        Console.WriteLine($"\nРезультаты поиска по ИНН: {inn}");
         Console.WriteLine($"   Найдено записей: {filtered.Count} (из {result.Items.Count} загруженных)");
 
         if (filtered.Count == 0)
         {
-            Console.WriteLine("   ⚠ Организаций с указанным ИНН не найдено");
+            Console.WriteLine("   Организаций с указанным ИНН не найдено");
             return;
         }
 
         Console.WriteLine(new string('─', 90));
         foreach (var org in filtered)
         {
-            Console.WriteLine($"   🏢 [{org.Id,4}] {org.Name,-30} | ИНН: {org.Inn,-12} | Тип: {org.Type,-20} | Штат: {org.EmployeeCount}");
+            Console.WriteLine($"   [{org.Id,4}] {org.Name,-30} | ИНН: {org.Inn,-12} | Тип: {org.Type,-20} | Штат: {org.EmployeeCount}");
         }
         Console.WriteLine(new string('─', 90));
     }
@@ -213,12 +213,12 @@ class Program
         var filePath = $"{fileName}.{format}";
 
         var request = new GetOrganizationsRequest { Page = 1, PageSize = 100 };
-        Console.WriteLine("→ Загрузка данных...");
+        Console.WriteLine("Загрузка данных...");
         var result = await cacheService.GetOrganizationsAsync(request, ct);
 
         if (result.Items.Count == 0)
         {
-            Console.WriteLine("⚠ Нет данных для экспорта");
+            Console.WriteLine("Нет данных для экспорта");
             return;
         }
 
@@ -246,7 +246,7 @@ class Program
             case PdfExporter pdf:
                 var pdfBytes = pdf.ExportToPdf(result.Items, $"Отчёт по организациям ({DateTime.Now:dd.MM.yyyy})");
                 await File.WriteAllBytesAsync(filePath, pdfBytes, ct);
-                Console.WriteLine($"✓ Экспортировано {result.Items.Count} записей в PDF: {filePath}");
+                Console.WriteLine($"Экспортировано {result.Items.Count} записей в PDF: {filePath}");
                 break;
         }
 
@@ -258,7 +258,7 @@ class Program
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine(@"
 ╔════════════════════════════════════════════════════════════╗
-║  🏢 КЛИЕНТ СИСТЕМЫ УЧЁТА ОРГАНИЗАЦИЙ (ЛР №5)              ║
+║  КЛИЕНТ СИСТЕМЫ УЧЁТА ОРГАНИЗАЦИЙ (ЛР №5)                 ║
 ║  Устойчивое консольное приложение с кэшированием и экспортом ║
 ╚════════════════════════════════════════════════════════════╝");
         Console.ResetColor();
@@ -267,7 +267,7 @@ class Program
     static void PrintMenu()
     {
         Console.WriteLine(@"
-📋 МЕНЮ:
+МЕНЮ:
    1 — Показать список организаций
    2 — Экспорт в CSV
    3 — Экспорт в Excel (.xlsx)
@@ -277,7 +277,7 @@ class Program
    H — Показать это меню
    Q — Выход
 
-💡 Подсказка: Нажмите Ctrl+C для отмены текущей операции");
+Подсказка: Нажмите Ctrl+C для отмены текущей операции");
     }
 }
 
@@ -310,7 +310,7 @@ class ColoredProgress : IProgress<int>
 
         if (percentage == 100)
         {
-            Console.WriteLine(" ✓");
+            Console.WriteLine(" Завершено");
         }
 
         _lastReported = percentage;
@@ -330,6 +330,6 @@ class SimpleProgress : IProgress<int>
             Console.Write($"\rПрогресс: {value,3}% [{new string('█', value / 2)}{new string(' ', 50 - value / 2)}]");
             _last = value;
         }
-        if (value == 100) Console.WriteLine(" ✓");
+        if (value == 100) Console.WriteLine(" Завершено");
     }
 }
