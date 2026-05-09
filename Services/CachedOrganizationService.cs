@@ -27,15 +27,15 @@ public class CachedOrganizationService
         
         if (_cache.TryGetValue(cacheKey, out PagedResponse<OrganizationDto>? cached))
         {
-            Console.WriteLine("✓ Данные получены из кэша");
+            Console.WriteLine("Данные получены из кэша");
             return cached!;
         }
         
-        Console.WriteLine("→ Загрузка данных из API...");
+        Console.WriteLine("Загрузка данных из API...");
         var organizations = await _apiClient.GetOrganizationsAsync(request, ct);
         
         _cache.Set(cacheKey, organizations, _cacheOptions);
-        Console.WriteLine($"✓ Загружено {organizations.Items.Count} записей, сохранено в кэш");
+        Console.WriteLine($"Загружено {organizations.Items.Count} записей, сохранено в кэш");
         
         return organizations;
     }
@@ -43,8 +43,7 @@ public class CachedOrganizationService
     public void InvalidateCache(string pattern = "*")
     {
         // Простая реализация: очистка всего кэша
-        // Для продакшена лучше использовать кастомный кэш с удалением по паттерну
         ((MemoryCache)_cache).Compact(1.0);
-        Console.WriteLine("✓ Кэш очищен");
+        Console.WriteLine("Кэш очищен");
     }
 }

@@ -11,7 +11,6 @@ public class ExcelExporter
     {
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         
-        // ← Используем обычный using, не await using
         using var package = new ExcelPackage();
         var worksheet = package.Workbook.Worksheets.Add("Организации");
         
@@ -61,8 +60,7 @@ public class ExcelExporter
         worksheet.Cells[$"E{lastRow}"].Formula = $"SUM(E2:E{lastRow - 1})";
         worksheet.Cells[$"E{lastRow}"].Style.Font.Bold = true;
         
-        // ← Save() без параметров, синхронный
         await Task.Run(() => package.SaveAs(new FileInfo(filePath)));
-        Console.WriteLine($"✓ Экспортировано {organizations.Count} записей в Excel: {filePath}");
+        Console.WriteLine($"Экспортировано {organizations.Count} записей в Excel: {filePath}");
     }
 }

@@ -10,14 +10,14 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddOrganizationClient(this IServiceCollection services, string baseUrl)
     {
-        // 1️⃣ Регистрируем MemoryCache
+        // Регистрация MemoryCache
         services.AddMemoryCache(options =>
         {
             options.SizeLimit = 100;
             options.CompactionPercentage = 0.25;
         });
 
-        // 2️⃣ Регистрируем типизированный HTTP-клиент с политиками Polly
+        // Регистрация типизированного HTTP-клиента с политиками Polly
         services.AddHttpClient<IOrganizationApiClient, OrganizationApiClient>(client =>
         {
             client.BaseAddress = new Uri(baseUrl);
@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
         .AddPolicyHandler(GetRetryPolicy())
         .AddPolicyHandler(GetCircuitBreakerPolicy());
 
-        // 3️⃣ 🔥 ДОБАВЛЕНО: Регистрация сервисов и экспортеров в DI
+        // Регистрация сервисов и экспортеров в DI
         services.AddScoped<CachedOrganizationService>();
         services.AddScoped<CsvExporter>();
         services.AddScoped<ExcelExporter>();
@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
                 TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                 (outcome, timespan, retryCount, context) =>
                 {
-                    Console.WriteLine($"↻ Попытка {retryCount} через {timespan.TotalSeconds}с...");
+                    Console.WriteLine($"Попытка {retryCount} через {timespan.TotalSeconds}с...");
                 });
     }
 
@@ -56,9 +56,9 @@ public static class ServiceCollectionExtensions
             .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30),
                 onBreak: (outcome, breakDelay) =>
                 {
-                    Console.WriteLine($"⚡ Цепь разорвана на {breakDelay.TotalSeconds}с");
+                    Console.WriteLine($"Цепь разорвана на {breakDelay.TotalSeconds}с");
                 },
-                onReset: () => Console.WriteLine("✓ Цепь восстановлена"),
-                onHalfOpen: () => Console.WriteLine("↻ Проверка доступности сервиса..."));
+                onReset: () => Console.WriteLine("Цепь восстановлена"),
+                onHalfOpen: () => Console.WriteLine("Проверка доступности сервиса..."));
     }
 }

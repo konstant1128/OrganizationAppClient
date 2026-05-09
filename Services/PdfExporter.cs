@@ -40,7 +40,7 @@ public class PdfExporter
         return document.GeneratePdf();
     }
 
-    // ✅ ИСПРАВЛЕНО: Обёртываем шапку в Column, чтобы избежать ошибки multiple child elements
+    // Обёртываем шапку в Column, чтобы избежать ошибки multiple child elements
     private void ComposeHeader(IContainer container)
     {
         container.Column(col =>
